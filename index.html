@@ -46,7 +46,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -127,47 +127,13 @@
             box-sizing: border-box;
         }
 
-        .pnr-group {
+        /* Main Table Styling */
+        .main-card {
             background: var(--bg-card);
             border-radius: 10px;
             box-shadow: 0 4px 6px var(--shadow);
-            margin-bottom: 25px;
             overflow: hidden;
-            border-left: 5px solid var(--secondary);
             border: 1px solid var(--border-color);
-            border-left-width: 5px;
-        }
-
-        .pnr-header {
-            background: var(--bg-header);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .pnr-number {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .btn-live {
-            background-color: var(--secondary);
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            transition: background 0.2s;
-            display: inline-block;
-        }
-
-        .btn-live:hover {
-            background-color: #2980b9;
         }
 
         table {
@@ -176,10 +142,11 @@
         }
 
         th, td {
-            padding: 12px 20px;
+            padding: 15px 20px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
             color: var(--text-main);
+            vertical-align: middle;
         }
 
         th {
@@ -187,6 +154,13 @@
             color: var(--text-muted);
             font-size: 0.85em;
             text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background-color: rgba(0,0,0,0.02);
         }
 
         .status-badge {
@@ -194,17 +168,41 @@
             border-radius: 4px;
             font-size: 0.85em;
             font-weight: bold;
+            display: inline-block;
         }
 
         .status-cnf { background-color: rgba(39, 174, 96, 0.15); color: var(--success); }
         .status-rac { background-color: rgba(243, 156, 18, 0.15); color: var(--warning); }
         .status-wl { background-color: rgba(192, 57, 43, 0.15); color: var(--danger); }
 
+        .chance-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .face-icon {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+            transition: transform 0.2s;
+        }
+
+        .face-icon:hover {
+            transform: scale(1.2);
+        }
+
+        .probability-wrapper {
+            flex-grow: 1;
+            max-width: 120px;
+        }
+
         .probability-bar-container {
             background-color: var(--border-color);
             border-radius: 10px;
             height: 8px;
-            width: 100px;
+            width: 100%;
             margin-top: 5px;
             overflow: hidden;
         }
@@ -217,6 +215,17 @@
         .chance-text {
             font-size: 0.75em; 
             color: var(--text-muted);
+        }
+
+        .pnr-link {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .pnr-link:hover {
+            text-decoration: underline;
         }
 
         .footer {
@@ -232,24 +241,18 @@
         }
 
         /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            .pnr-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .btn-live {
-                width: 100%;
-                text-align: center;
-                box-sizing: border-box;
-            }
-
+        @media (max-width: 768px) {
             th, td {
                 padding: 10px;
                 font-size: 0.9em;
             }
             
-            .chance-text {
+            .face-icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            .hide-mobile {
                 display: none;
             }
         }
@@ -279,21 +282,33 @@
 
         <input type="text" id="searchInput" class="search-box" placeholder="Search for a name or PNR...">
 
-        <div id="ticketContainer">
-            <!-- Tickets injected by JS -->
+        <div class="main-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Passenger Name</th>
+                        <th>PNR Number</th>
+                        <th class="hide-mobile">Age</th>
+                        <th>Current Status</th>
+                        <th>Chance</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketBody">
+                    <!-- Rows injected by JS -->
+                </tbody>
+            </table>
         </div>
 
         <div class="footer">
-            <p>Generated from Ticket PDF • Probabilities are estimates based on RAC/CNF status.</p>
+            <p>Generated from Ticket PDF • Images require local files (f100.png, f95.png etc) or will fallback to emojis.</p>
         </div>
     </div>
 
     <script>
         // Data extracted directly from the provided PDF
-        const ticketData = [
+        const rawTicketData = [
             {
                 pnr: "4849000451",
-                class: "SL",
                 passengers: [
                     { name: "NAJMATH MV", age: 23, status: "CNF/S5/13/MB" },
                     { name: "HIBA NASRIN", age: 22, status: "CNF/S5/14/UB" },
@@ -305,7 +320,6 @@
             },
             {
                 pnr: "4429031346",
-                class: "SL",
                 passengers: [
                     { name: "SETHULAKSHMI", age: 22, status: "CNF/S2/76/LB" },
                     { name: "RAMSHIYA MS", age: 23, status: "CNF/S2/77/MB" },
@@ -317,7 +331,6 @@
             },
             {
                 pnr: "4641763305",
-                class: "SL",
                 passengers: [
                     { name: "Fathimath Hannat", age: 22, status: "RAC/4/LB" },
                     { name: "Lakshmi H", age: 22, status: "RAC/5/LB" },
@@ -329,7 +342,6 @@
             },
             {
                 pnr: "4936168162",
-                class: "SL",
                 passengers: [
                     { name: "SHAHNA S", age: 22, status: "RAC/14/LB" },
                     { name: "DEVIKA S", age: 21, status: "RAC/15/LB" },
@@ -341,7 +353,6 @@
             },
             {
                 pnr: "4129031678",
-                class: "SL",
                 passengers: [
                     { name: "NASEEBA SALAHUDH", age: 23, status: "RAC/31/LB" },
                     { name: "ANAN P ABBAS", age: 21, status: "RAC/32/LB" },
@@ -353,7 +364,6 @@
             },
             {
                 pnr: "4329031648",
-                class: "SL",
                 passengers: [
                     { name: "NAHEEL KK", age: 22, status: "RAC/49/LB" },
                     { name: "BASIM SHEBIN KP", age: 23, status: "RAC/50/LB" },
@@ -365,7 +375,6 @@
             },
             {
                 pnr: "4641763497",
-                class: "SL",
                 passengers: [
                     { name: "FASAL RAHMAN", age: 21, status: "RAC/55/LB" },
                     { name: "MUHAMMED FAZIL C", age: 23, status: "RAC/56/LB" },
@@ -377,13 +386,27 @@
             },
             {
                 pnr: "4936169474",
-                class: "3E",
                 passengers: [
                     { name: "HYDERALI K", age: 52, status: "RAC/1/LB" },
                     { name: "SHAMSHAD KM", age: 47, status: "RAC/2/LB" }
                 ]
             }
         ];
+
+        // Process data: Flatten array and sort alphabetically
+        let allPassengers = [];
+        rawTicketData.forEach(group => {
+            group.passengers.forEach(p => {
+                allPassengers.push({
+                    ...p,
+                    pnr: group.pnr
+                });
+            });
+        });
+
+        // Sort by Name
+        allPassengers.sort((a, b) => a.name.localeCompare(b.name));
+
 
         // --- THEME LOGIC ---
         function toggleTheme() {
@@ -415,19 +438,16 @@
         }
 
         // --- UPDATE TIMER LOGIC ---
-        let secondsRemaining = 300; // 5 minutes
+        let secondsRemaining = 300; 
 
         function startUpdateTimer() {
             const timerDisplay = document.getElementById('updateTimer');
-            
             setInterval(() => {
                 secondsRemaining--;
-                
                 if (secondsRemaining <= 0) {
                     secondsRemaining = 300;
                     refreshView();
                 }
-
                 const minutes = Math.floor(secondsRemaining / 60);
                 const seconds = secondsRemaining % 60;
                 timerDisplay.innerText = `Next refresh: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -435,8 +455,6 @@
         }
 
         function refreshView() {
-            // In a real app with backend, we would fetch(api) here.
-            // Since this is a static file, we re-render the view to simulate activity.
             const timerDisplay = document.getElementById('updateTimer');
             timerDisplay.innerText = "Refreshing...";
             setTimeout(() => {
@@ -446,38 +464,46 @@
             }, 500);
         }
 
-        // --- TICKET LOGIC ---
+        // --- TICKET LOGIC RECALCULATED ---
         function calculateChance(status) {
             status = status.toUpperCase();
+            
+            // Default Error Fallback
+            let result = { percent: 0, text: "Unknown", color: "#95a5a6", img: "f80.png", fallbackEmoji: "❓" };
+
             if (status.includes("CNF")) {
-                return { percent: 100, text: "Confirmed", color: "var(--success)" };
-            }
-            if (status.includes("RAC")) {
-                const racNum = parseInt(status.match(/\d+/)) || 50;
-                let percent = 85; 
-                if(racNum < 10) percent = 95;
-                else if(racNum < 30) percent = 90;
+                // 100% - Joyful
+                result = { percent: 100, text: "Confirmed", color: "var(--success)", img: "f100.png", fallbackEmoji: "🤩" };
+            } 
+            else if (status.includes("RAC")) {
+                const racNum = parseInt(status.match(/\d+/)) || 99;
                 
-                return { percent: percent, text: "High (RAC)", color: "var(--warning)" };
+                if (racNum <= 20) {
+                    // 95% - Happy
+                    result = { percent: 95, text: "High Chance", color: "var(--success)", img: "f95.png", fallbackEmoji: "🙂" };
+                } else if (racNum <= 40) {
+                    // 90% - Neutral
+                    result = { percent: 90, text: "Likely", color: "var(--warning)", img: "f90.png", fallbackEmoji: "😐" };
+                } else if (racNum <= 60) {
+                    // 85% - Slight Angry
+                    result = { percent: 85, text: "Uncertain", color: "#e67e22", img: "f85.png", fallbackEmoji: "😠" };
+                } else {
+                    // 80% - Angry
+                    result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡" };
+                }
+            } 
+            else if (status.includes("WL")) {
+                // 80% - Angry
+                result = { percent: 80, text: "Waitlist", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡" };
             }
-            if (status.includes("WL")) {
-                return { percent: 40, text: "Waitlist", color: "var(--danger)" };
-            }
-            return { percent: 0, text: "Unknown", color: "#95a5a6" };
+
+            return result;
         }
 
         function renderStats() {
-            let total = 0;
-            let cnf = 0;
-            let rac = 0;
-
-            ticketData.forEach(pnr => {
-                pnr.passengers.forEach(p => {
-                    total++;
-                    if (p.status.includes("CNF")) cnf++;
-                    else if (p.status.includes("RAC")) rac++;
-                });
-            });
+            let total = allPassengers.length;
+            let cnf = allPassengers.filter(p => p.status.includes("CNF")).length;
+            let rac = allPassengers.filter(p => p.status.includes("RAC")).length;
 
             const statsBar = document.getElementById('statsBar');
             statsBar.innerHTML = `
@@ -488,70 +514,53 @@
         }
 
         function renderTickets(filterText = "") {
-            const container = document.getElementById('ticketContainer');
-            container.innerHTML = "";
+            const tbody = document.getElementById('ticketBody');
+            tbody.innerHTML = "";
             const lowerFilter = filterText.toLowerCase();
 
-            ticketData.forEach(group => {
-                const pnrMatches = group.pnr.includes(lowerFilter);
-                const passengerMatches = group.passengers.some(p => p.name.toLowerCase().includes(lowerFilter));
+            allPassengers.forEach(p => {
+                const pnrMatches = p.pnr.includes(lowerFilter);
+                const nameMatches = p.name.toLowerCase().includes(lowerFilter);
 
-                if (!pnrMatches && !passengerMatches && filterText !== "") return;
+                if (!pnrMatches && !nameMatches && filterText !== "") return;
 
-                const card = document.createElement('div');
-                card.className = 'pnr-group';
+                const chance = calculateChance(p.status);
+                let statusClass = "status-wl";
+                if(p.status.includes("CNF")) statusClass = "status-cnf";
+                else if(p.status.includes("RAC")) statusClass = "status-rac";
 
-                let rows = "";
-                group.passengers.forEach(p => {
-                    const chance = calculateChance(p.status);
-                    let statusClass = "status-wl";
-                    if(p.status.includes("CNF")) statusClass = "status-cnf";
-                    else if(p.status.includes("RAC")) statusClass = "status-rac";
+                const nameDisplay = (filterText && nameMatches) 
+                    ? `<mark>${p.name}</mark>` 
+                    : p.name;
 
-                    const nameDisplay = (filterText && p.name.toLowerCase().includes(lowerFilter)) 
-                        ? `<mark>${p.name}</mark>` 
-                        : p.name;
-
-                    rows += `
-                        <tr>
-                            <td>
-                                <div>${nameDisplay}</div>
-                                <div style="font-size:0.8em; color:var(--text-muted);">Age: ${p.age}</div>
-                            </td>
-                            <td><span class="status-badge ${statusClass}">${p.status}</span></td>
-                            <td>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div style="font-weight: 500;">${nameDisplay}</div>
+                    </td>
+                    <td>
+                        <a href="https://www.confirmtkt.com/pnr-status/${p.pnr}" target="_blank" class="pnr-link">${p.pnr} ↗</a>
+                    </td>
+                    <td class="hide-mobile">
+                        ${p.age}
+                    </td>
+                    <td><span class="status-badge ${statusClass}">${p.status}</span></td>
+                    <td>
+                        <div class="chance-cell">
+                            <!-- Image with fallback to emoji if file missing -->
+                            <img src="${chance.img}" class="face-icon" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size:30px\'>${chance.fallbackEmoji}</span>'">
+                            
+                            <div class="probability-wrapper">
                                 <div style="font-size:0.9em; font-weight:bold; color:${chance.color}">${chance.percent}%</div>
                                 <div class="probability-bar-container">
                                     <div class="probability-bar" style="width: ${chance.percent}%; background-color: ${chance.color}"></div>
                                 </div>
                                 <div class="chance-text">${chance.text}</div>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                card.innerHTML = `
-                    <div class="pnr-header">
-                        <div>
-                            <div class="pnr-number">PNR: ${group.pnr}</div>
-                            <div style="font-size:0.9em; color:var(--text-muted);">Class: ${group.class} • ${group.passengers.length} Passengers</div>
+                            </div>
                         </div>
-                        <a href="https://www.confirmtkt.com/pnr-status/${group.pnr}" target="_blank" class="btn-live">Check Live Status ↗</a>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Status (PDF)</th>
-                                <th>Chance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
+                    </td>
                 `;
-                container.appendChild(card);
+                tbody.appendChild(row);
             });
         }
 
