@@ -11,21 +11,80 @@
             --success: #27ae60;
             --warning: #f39c12;
             --danger: #c0392b;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
+            --bg-body: #f4f7f6;
+            --bg-card: #ffffff;
+            --bg-header: #f8f9fa;
+            --text-main: #333333;
+            --text-muted: #888888;
+            --border-color: #eeeeee;
+            --shadow: rgba(0,0,0,0.05);
+        }
+
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            --primary: #ecf0f1;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --bg-body: #1a1a1a;
+            --bg-card: #2c3e50;
+            --bg-header: #34495e;
+            --text-main: #ecf0f1;
+            --text-muted: #bdc3c7;
+            --border-color: #465c71;
+            --shadow: rgba(0,0,0,0.3);
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background-color: var(--bg-body);
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
+        }
+
+        /* Top Bar with Controls */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px var(--shadow);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+        }
+
+        .update-timer {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
         }
 
         header {
@@ -47,17 +106,21 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--bg-card);
             padding: 10px 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px var(--shadow);
             font-weight: bold;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
         }
 
         .search-box {
             width: 100%;
             padding: 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-main);
             border-radius: 8px;
             font-size: 16px;
             margin-bottom: 20px;
@@ -65,21 +128,23 @@
         }
 
         .pnr-group {
-            background: white;
+            background: var(--bg-card);
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px var(--shadow);
             margin-bottom: 25px;
             overflow: hidden;
             border-left: 5px solid var(--secondary);
+            border: 1px solid var(--border-color);
+            border-left-width: 5px;
         }
 
         .pnr-header {
-            background: #f8f9fa;
+            background: var(--bg-header);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
             flex-wrap: wrap;
             gap: 10px;
         }
@@ -113,12 +178,13 @@
         th, td {
             padding: 12px 20px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
         }
 
         th {
-            background-color: #fcfcfc;
-            color: #777;
+            background-color: var(--bg-header);
+            color: var(--text-muted);
             font-size: 0.85em;
             text-transform: uppercase;
         }
@@ -135,7 +201,7 @@
         .status-wl { background-color: rgba(192, 57, 43, 0.15); color: var(--danger); }
 
         .probability-bar-container {
-            background-color: #eee;
+            background-color: var(--border-color);
             border-radius: 10px;
             height: 8px;
             width: 100px;
@@ -148,11 +214,21 @@
             border-radius: 10px;
         }
 
+        .chance-text {
+            font-size: 0.75em; 
+            color: var(--text-muted);
+        }
+
         .footer {
             text-align: center;
             margin-top: 40px;
-            color: #888;
+            color: var(--text-muted);
             font-size: 0.9em;
+        }
+
+        mark {
+            background-color: #f1c40f;
+            color: #000;
         }
 
         /* Mobile Responsiveness */
@@ -173,7 +249,6 @@
                 font-size: 0.9em;
             }
             
-            /* Hide Chance text on very small screens to save space */
             .chance-text {
                 display: none;
             }
@@ -183,6 +258,16 @@
 <body>
 
     <div class="container">
+        
+        <!-- Controls Area -->
+        <div class="top-bar">
+            <div id="updateTimer" class="update-timer">Next update: 5:00</div>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span> 
+                <span id="themeText">Dark Mode</span>
+            </button>
+        </div>
+
         <header>
             <h1>🚄 Class Tour Ticket Tracker</h1>
             <p>Mangladweep Exp (12617) | 23-Jan-2026</p>
@@ -300,25 +385,83 @@
             }
         ];
 
-        // Logic to calculate chance
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                icon.innerText = '🌙';
+                text.innerText = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.innerText = '☀️';
+                text.innerText = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').innerText = '☀️';
+                document.getElementById('themeText').innerText = 'Light Mode';
+            }
+        }
+
+        // --- UPDATE TIMER LOGIC ---
+        let secondsRemaining = 300; // 5 minutes
+
+        function startUpdateTimer() {
+            const timerDisplay = document.getElementById('updateTimer');
+            
+            setInterval(() => {
+                secondsRemaining--;
+                
+                if (secondsRemaining <= 0) {
+                    secondsRemaining = 300;
+                    refreshView();
+                }
+
+                const minutes = Math.floor(secondsRemaining / 60);
+                const seconds = secondsRemaining % 60;
+                timerDisplay.innerText = `Next refresh: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }, 1000);
+        }
+
+        function refreshView() {
+            // In a real app with backend, we would fetch(api) here.
+            // Since this is a static file, we re-render the view to simulate activity.
+            const timerDisplay = document.getElementById('updateTimer');
+            timerDisplay.innerText = "Refreshing...";
+            setTimeout(() => {
+                renderStats();
+                const currentSearch = document.getElementById('searchInput').value;
+                renderTickets(currentSearch);
+            }, 500);
+        }
+
+        // --- TICKET LOGIC ---
         function calculateChance(status) {
             status = status.toUpperCase();
             if (status.includes("CNF")) {
-                return { percent: 100, text: "Confirmed", color: "#27ae60" };
+                return { percent: 100, text: "Confirmed", color: "var(--success)" };
             }
             if (status.includes("RAC")) {
-                // RAC logic: Lower number = higher chance of full berth
-                // But RAC itself guarantees travel (seating).
-                // We will return high % for travel.
                 const racNum = parseInt(status.match(/\d+/)) || 50;
                 let percent = 85; 
                 if(racNum < 10) percent = 95;
                 else if(racNum < 30) percent = 90;
                 
-                return { percent: percent, text: "High (RAC)", color: "#f39c12" };
+                return { percent: percent, text: "High (RAC)", color: "var(--warning)" };
             }
             if (status.includes("WL")) {
-                return { percent: 40, text: "Waitlist", color: "#c0392b" };
+                return { percent: 40, text: "Waitlist", color: "var(--danger)" };
             }
             return { percent: 0, text: "Unknown", color: "#95a5a6" };
         }
@@ -338,9 +481,9 @@
 
             const statsBar = document.getElementById('statsBar');
             statsBar.innerHTML = `
-                <div class="stat-card" style="border-left: 5px solid #2c3e50">Total Passengers: ${total}</div>
-                <div class="stat-card" style="border-left: 5px solid #27ae60">Confirmed: ${cnf}</div>
-                <div class="stat-card" style="border-left: 5px solid #f39c12">RAC: ${rac}</div>
+                <div class="stat-card" style="border-left: 5px solid var(--primary)">Total: ${total}</div>
+                <div class="stat-card" style="border-left: 5px solid var(--success)">Confirmed: ${cnf}</div>
+                <div class="stat-card" style="border-left: 5px solid var(--warning)">RAC: ${rac}</div>
             `;
         }
 
@@ -350,7 +493,6 @@
             const lowerFilter = filterText.toLowerCase();
 
             ticketData.forEach(group => {
-                // Check if group matches filter
                 const pnrMatches = group.pnr.includes(lowerFilter);
                 const passengerMatches = group.passengers.some(p => p.name.toLowerCase().includes(lowerFilter));
 
@@ -366,7 +508,6 @@
                     if(p.status.includes("CNF")) statusClass = "status-cnf";
                     else if(p.status.includes("RAC")) statusClass = "status-rac";
 
-                    // Highlight matched name if filtering
                     const nameDisplay = (filterText && p.name.toLowerCase().includes(lowerFilter)) 
                         ? `<mark>${p.name}</mark>` 
                         : p.name;
@@ -375,7 +516,7 @@
                         <tr>
                             <td>
                                 <div>${nameDisplay}</div>
-                                <div style="font-size:0.8em; color:#888;">Age: ${p.age}</div>
+                                <div style="font-size:0.8em; color:var(--text-muted);">Age: ${p.age}</div>
                             </td>
                             <td><span class="status-badge ${statusClass}">${p.status}</span></td>
                             <td>
@@ -383,7 +524,7 @@
                                 <div class="probability-bar-container">
                                     <div class="probability-bar" style="width: ${chance.percent}%; background-color: ${chance.color}"></div>
                                 </div>
-                                <div class="chance-text" style="font-size:0.75em; color:#888;">${chance.text}</div>
+                                <div class="chance-text">${chance.text}</div>
                             </td>
                         </tr>
                     `;
@@ -393,7 +534,7 @@
                     <div class="pnr-header">
                         <div>
                             <div class="pnr-number">PNR: ${group.pnr}</div>
-                            <div style="font-size:0.9em; color:#666;">Class: ${group.class} • ${group.passengers.length} Passengers</div>
+                            <div style="font-size:0.9em; color:var(--text-muted);">Class: ${group.class} • ${group.passengers.length} Passengers</div>
                         </div>
                         <a href="https://www.confirmtkt.com/pnr-status/${group.pnr}" target="_blank" class="btn-live">Check Live Status ↗</a>
                     </div>
@@ -401,7 +542,7 @@
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Current Status</th>
+                                <th>Status (PDF)</th>
                                 <th>Chance</th>
                             </tr>
                         </thead>
@@ -415,10 +556,11 @@
         }
 
         // Initialize
+        loadTheme();
+        startUpdateTimer();
         renderStats();
         renderTickets();
 
-        // Search Listener
         document.getElementById('searchInput').addEventListener('input', (e) => {
             renderTickets(e.target.value);
         });
