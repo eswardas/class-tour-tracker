@@ -175,23 +175,127 @@
         .status-rac { background-color: rgba(243, 156, 18, 0.15); color: var(--warning); }
         .status-wl { background-color: rgba(192, 57, 43, 0.15); color: var(--danger); }
 
+        /* --- AURA EFFECTS --- */
         .chance-cell {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
+        .face-wrapper {
+            position: relative;
+            width: 55px; /* Slightly larger to contain aura */
+            height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .face-icon {
             width: 45px;
             height: 45px;
             object-fit: contain;
+            position: relative;
+            z-index: 2; /* Sit on top of aura */
             filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
             transition: transform 0.2s;
         }
 
         .face-icon:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
+
+        /* AURA DEFINITIONS */
+        .aura-100::before {
+            /* Calm Blue White */
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(52, 152, 219, 0.5) 60%, transparent 70%);
+            z-index: 1;
+            animation: pulse-calm 3s infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .aura-95::before {
+            /* Happy Green - Pixelated Border */
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed var(--success);
+            border-radius: 50%;
+            z-index: 1;
+            animation: spin-slow 10s linear infinite;
+            opacity: 0.6;
+        }
+
+        .aura-90::before {
+            /* Neutral Yellow - Static Glow */
+            content: '';
+            position: absolute;
+            inset: 5px;
+            background: rgba(241, 196, 15, 0.2);
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 5px var(--warning);
+        }
+
+        .aura-85::before {
+            /* Tense Orange - Fast Flicker */
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            border: 2px solid #e67e22;
+            z-index: 1;
+            animation: flicker-tense 0.2s infinite alternate;
+            opacity: 0.5;
+        }
+
+        .aura-80::before {
+            /* RED FLAME - PIXELATED FIRE */
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(0deg, rgba(255,0,0,0.8) 0%, rgba(255,165,0,0.6) 40%, transparent 80%);
+            z-index: 1;
+            clip-path: polygon(10% 100%, 20% 0%, 30% 100%, 40% 10%, 50% 100%, 60% 0%, 70% 100%, 80% 20%, 90% 100%);
+            animation: flame-move 0.1s infinite alternate, flame-color 0.5s infinite alternate;
+            filter: drop-shadow(0 -5px 5px rgba(255, 69, 0, 0.8));
+        }
+
+        /* ANIMATIONS */
+        @keyframes pulse-calm {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes flicker-tense {
+            from { opacity: 0.3; transform: scale(0.98); }
+            to { opacity: 0.7; transform: scale(1.02); }
+        }
+
+        @keyframes flame-move {
+            0% { clip-path: polygon(10% 100%, 25% 10%, 30% 100%, 45% 20%, 50% 100%, 65% 5%, 70% 100%, 85% 15%, 90% 100%); transform: translateY(0); }
+            100% { clip-path: polygon(12% 100%, 22% 5%, 32% 100%, 42% 15%, 52% 100%, 62% 0%, 72% 100%, 82% 10%, 92% 100%); transform: translateY(-2px); }
+        }
+
+        @keyframes flame-color {
+            from { background: linear-gradient(0deg, #c0392b 0%, #e74c3c 40%, transparent 80%); }
+            to { background: linear-gradient(0deg, #e74c3c 0%, #f1c40f 40%, transparent 80%); }
+        }
+
 
         .probability-wrapper {
             flex-grow: 1;
@@ -247,6 +351,11 @@
                 font-size: 0.9em;
             }
             
+            .face-wrapper {
+                width: 40px;
+                height: 40px;
+            }
+
             .face-icon {
                 width: 30px;
                 height: 30px;
@@ -469,32 +578,32 @@
             status = status.toUpperCase();
             
             // Default Error Fallback
-            let result = { percent: 0, text: "Unknown", color: "#95a5a6", img: "f80.png", fallbackEmoji: "❓" };
+            let result = { percent: 0, text: "Unknown", color: "#95a5a6", img: "f80.png", fallbackEmoji: "❓", aura: "" };
 
             if (status.includes("CNF")) {
-                // 100% - Joyful
-                result = { percent: 100, text: "Confirmed", color: "var(--success)", img: "f100.png", fallbackEmoji: "🤩" };
+                // 100% - Joyful - Calm Blue Aura
+                result = { percent: 100, text: "Confirmed", color: "var(--success)", img: "f100.png", fallbackEmoji: "🤩", aura: "aura-100" };
             } 
             else if (status.includes("RAC")) {
                 const racNum = parseInt(status.match(/\d+/)) || 99;
                 
                 if (racNum <= 20) {
                     // 95% - Happy
-                    result = { percent: 95, text: "High Chance", color: "var(--success)", img: "f95.png", fallbackEmoji: "🙂" };
+                    result = { percent: 95, text: "High Chance", color: "var(--success)", img: "f95.png", fallbackEmoji: "🙂", aura: "aura-95" };
                 } else if (racNum <= 40) {
                     // 90% - Neutral
-                    result = { percent: 90, text: "Likely", color: "var(--warning)", img: "f90.png", fallbackEmoji: "😐" };
+                    result = { percent: 90, text: "Likely", color: "var(--warning)", img: "f90.png", fallbackEmoji: "😐", aura: "aura-90" };
                 } else if (racNum <= 60) {
                     // 85% - Slight Angry
-                    result = { percent: 85, text: "Uncertain", color: "#e67e22", img: "f85.png", fallbackEmoji: "😠" };
+                    result = { percent: 85, text: "Uncertain", color: "#e67e22", img: "f85.png", fallbackEmoji: "😠", aura: "aura-85" };
                 } else {
-                    // 80% - Angry
-                    result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡" };
+                    // 80% - Angry (Highest RAC = Lowest Chance = Flame)
+                    result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "aura-80" };
                 }
             } 
             else if (status.includes("WL")) {
                 // 80% - Angry
-                result = { percent: 80, text: "Waitlist", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡" };
+                result = { percent: 80, text: "Waitlist", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "aura-80" };
             }
 
             return result;
@@ -547,8 +656,10 @@
                     <td><span class="status-badge ${statusClass}">${p.status}</span></td>
                     <td>
                         <div class="chance-cell">
-                            <!-- Image with fallback to emoji if file missing -->
-                            <img src="${chance.img}" class="face-icon" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size:30px\'>${chance.fallbackEmoji}</span>'">
+                            <!-- Image Wrapper with Aura Class -->
+                            <div class="face-wrapper ${chance.aura}">
+                                <img src="${chance.img}" class="face-icon" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size:30px\'>${chance.fallbackEmoji}</span>'">
+                            </div>
                             
                             <div class="probability-wrapper">
                                 <div style="font-size:0.9em; font-weight:bold; color:${chance.color}">${chance.percent}%</div>
