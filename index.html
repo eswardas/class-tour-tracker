@@ -110,15 +110,18 @@
             box-sizing: border-box;
         }
 
+        /* --- TABLE & SCROLLING FIX --- */
         .main-card {
             background: var(--bg-card);
             border-radius: 10px;
             box-shadow: 0 4px 6px var(--shadow);
-            overflow: hidden;
             border: 1px solid var(--border-color);
+            /* Enable horizontal scroll for mobile */
+            overflow-x: auto; 
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; /* Force table width so it triggers scroll */ }
 
         th, td {
             padding: 15px 20px;
@@ -153,7 +156,6 @@
         .status-rac { background-color: rgba(243, 156, 18, 0.15); color: var(--warning); }
         .status-wl { background-color: rgba(192, 57, 43, 0.15); color: var(--danger); }
         
-        /* New Live Pulse Animation */
         .live-active {
             animation: text-pulse 2s infinite;
         }
@@ -260,11 +262,18 @@
             display: inline-block;
         }
 
+        /* --- MOBILE ADJUSTMENTS --- */
         @media (max-width: 768px) {
-            th, td { padding: 10px; font-size: 0.9em; }
-            .face-wrapper { width: 60px; height: 60px; }
-            .face-icon { width: 50px; height: 50px; }
+            body { padding: 10px; }
+            th, td { padding: 8px 6px; font-size: 0.85em; } /* Tighter padding */
+            
+            /* Smaller faces on mobile to fit screen */
+            .face-wrapper { width: 60px; height: 60px; } 
+            .face-icon { width: 50px; height: 50px; } 
+            .aura-canvas { width: 60px; height: 60px; }
+
             .hide-mobile { display: none; }
+            .pnr-link { padding: 2px 6px; font-size: 0.75em; }
         }
     </style>
 </head>
@@ -289,6 +298,11 @@
         </header>
 
         <input type="text" id="searchInput" class="search-box" placeholder="Search for a name or PNR...">
+
+        <!-- Swipe hint for mobile -->
+        <div style="text-align: right; color: var(--text-muted); font-size: 0.8em; margin-bottom: 5px; display: none;" id="swipeHint">
+            Swipe left to see more ↔
+        </div>
 
         <div class="main-card">
             <table>
@@ -395,6 +409,11 @@
             
             // Start the background loop immediately
             startBackgroundChecks();
+
+            // Show swipe hint on mobile
+            if(window.innerWidth < 768) {
+                document.getElementById('swipeHint').style.display = 'block';
+            }
         }
 
         // --- BACKGROUND SCRAPER ENGINE ---
