@@ -20,7 +20,6 @@
             --shadow: rgba(0,0,0,0.05);
         }
 
-        /* Dark Theme Variables */
         [data-theme="dark"] {
             --primary: #ecf0f1;
             --secondary: #3498db;
@@ -50,7 +49,6 @@
             margin: 0 auto;
         }
 
-        /* Top Bar with Controls */
         .top-bar {
             display: flex;
             justify-content: flex-end;
@@ -74,9 +72,7 @@
             transition: all 0.2s;
         }
 
-        .theme-toggle:hover {
-            transform: translateY(-1px);
-        }
+        .theme-toggle:hover { transform: translateY(-1px); }
 
         .update-timer {
             font-size: 0.85em;
@@ -87,15 +83,8 @@
             border: 1px solid var(--border-color);
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 5px; }
 
         .stats-bar {
             display: flex;
@@ -127,7 +116,6 @@
             box-sizing: border-box;
         }
 
-        /* Main Table Styling */
         .main-card {
             background: var(--bg-card);
             border-radius: 10px;
@@ -136,10 +124,7 @@
             border: 1px solid var(--border-color);
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
 
         th, td {
             padding: 15px 20px;
@@ -159,9 +144,7 @@
             z-index: 10;
         }
 
-        tr:hover {
-            background-color: rgba(0,0,0,0.02);
-        }
+        tr:hover { background-color: rgba(0,0,0,0.02); }
 
         .status-badge {
             padding: 4px 8px;
@@ -175,7 +158,7 @@
         .status-rac { background-color: rgba(243, 156, 18, 0.15); color: var(--warning); }
         .status-wl { background-color: rgba(192, 57, 43, 0.15); color: var(--danger); }
 
-        /* --- AURA EFFECTS --- */
+        /* --- ADVANCED AURA SYSTEM --- */
         .chance-cell {
             display: flex;
             align-items: center;
@@ -184,194 +167,124 @@
 
         .face-wrapper {
             position: relative;
-            width: 55px; /* Slightly larger to contain aura */
-            height: 55px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
+        /* The Canvas sits BEHIND the image */
+        .aura-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            image-rendering: pixelated; /* Crucial for retro look */
+            pointer-events: none;
+        }
+
+        /* The Image sits ON TOP */
         .face-icon {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             object-fit: contain;
             position: relative;
-            z-index: 2; /* Sit on top of aura */
+            z-index: 2;
             filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
             transition: transform 0.2s;
         }
 
-        .face-icon:hover {
-            transform: scale(1.1);
-        }
+        .face-icon:hover { transform: scale(1.1); }
 
-        /* AURA DEFINITIONS */
-        .aura-100::before {
-            /* Calm Blue White */
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(52, 152, 219, 0.5) 60%, transparent 70%);
-            z-index: 1;
-            animation: pulse-calm 3s infinite ease-in-out;
-            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-
-        .aura-95::before {
-            /* Happy Green - Pixelated Border */
+        /* CSS-Only Effects for tiers that don't need heavy canvas */
+        
+        /* 100% - Divine Rays */
+        .aura-divine::before {
             content: '';
             position: absolute;
             width: 100%;
             height: 100%;
-            border: 2px dashed var(--success);
+            background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(52, 152, 219, 0.2) 10deg, rgba(255,255,255,0) 20deg);
             border-radius: 50%;
+            animation: rotate-divine 10s linear infinite;
             z-index: 1;
-            animation: spin-slow 10s linear infinite;
-            opacity: 0.6;
         }
-
-        .aura-90::before {
-            /* Neutral Yellow - Static Glow */
+        .aura-divine::after {
             content: '';
             position: absolute;
             inset: 5px;
-            background: rgba(241, 196, 15, 0.2);
+            background: radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%);
             border-radius: 50%;
             z-index: 1;
-            box-shadow: 0 0 5px var(--warning);
+            animation: pulse-divine 2s ease-in-out infinite;
         }
 
-        .aura-85::before {
-            /* Tense Orange - Fast Flicker */
+        /* 85% - Glitch / Nervous */
+        .aura-glitch .face-icon {
+            animation: glitch-skew 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite both;
+        }
+        .aura-glitch::before {
             content: '';
             position: absolute;
-            inset: 2px;
-            border-radius: 50%;
+            inset: 8px;
             border: 2px solid #e67e22;
-            z-index: 1;
-            animation: flicker-tense 0.2s infinite alternate;
             opacity: 0.5;
+            z-index: 1;
+            border-radius: 5px;
+            animation: flicker-tense 0.1s infinite;
         }
 
-        .aura-80::before {
-            /* RED FLAME - PIXELATED FIRE */
+        /* 90% - Chill Bobbing */
+        .aura-chill .face-icon {
+            animation: bob 3s ease-in-out infinite;
+        }
+        .aura-chill::before {
             content: '';
             position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 120%;
-            background: linear-gradient(0deg, rgba(255,0,0,0.8) 0%, rgba(255,165,0,0.6) 40%, transparent 80%);
+            inset: 10px;
+            background: rgba(241, 196, 15, 0.15);
+            border-radius: 50%;
             z-index: 1;
-            clip-path: polygon(10% 100%, 20% 0%, 30% 100%, 40% 10%, 50% 100%, 60% 0%, 70% 100%, 80% 20%, 90% 100%);
-            animation: flame-move 0.1s infinite alternate, flame-color 0.5s infinite alternate;
-            filter: drop-shadow(0 -5px 5px rgba(255, 69, 0, 0.8));
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
         }
 
         /* ANIMATIONS */
-        @keyframes pulse-calm {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 0.9; }
-            100% { transform: scale(0.9); opacity: 0.7; }
+        @keyframes rotate-divine { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse-divine { 0%, 100% { opacity: 0.5; transform: scale(0.9); } 50% { opacity: 0.8; transform: scale(1.1); } }
+        @keyframes flicker-tense { 0% { opacity: 0.2; } 100% { opacity: 0.6; } }
+        @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        @keyframes glitch-skew { 
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
         }
 
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .probability-wrapper { flex-grow: 1; max-width: 120px; }
+        .probability-bar-container { background-color: var(--border-color); border-radius: 10px; height: 8px; width: 100%; margin-top: 5px; overflow: hidden; }
+        .probability-bar { height: 100%; border-radius: 10px; }
+        .chance-text { font-size: 0.75em; color: var(--text-muted); }
+        .pnr-link { color: var(--secondary); text-decoration: none; font-size: 0.9em; font-weight: bold; }
+        .pnr-link:hover { text-decoration: underline; }
+        .footer { text-align: center; margin-top: 40px; color: var(--text-muted); font-size: 0.9em; }
+        mark { background-color: #f1c40f; color: #000; }
 
-        @keyframes flicker-tense {
-            from { opacity: 0.3; transform: scale(0.98); }
-            to { opacity: 0.7; transform: scale(1.02); }
-        }
-
-        @keyframes flame-move {
-            0% { clip-path: polygon(10% 100%, 25% 10%, 30% 100%, 45% 20%, 50% 100%, 65% 5%, 70% 100%, 85% 15%, 90% 100%); transform: translateY(0); }
-            100% { clip-path: polygon(12% 100%, 22% 5%, 32% 100%, 42% 15%, 52% 100%, 62% 0%, 72% 100%, 82% 10%, 92% 100%); transform: translateY(-2px); }
-        }
-
-        @keyframes flame-color {
-            from { background: linear-gradient(0deg, #c0392b 0%, #e74c3c 40%, transparent 80%); }
-            to { background: linear-gradient(0deg, #e74c3c 0%, #f1c40f 40%, transparent 80%); }
-        }
-
-
-        .probability-wrapper {
-            flex-grow: 1;
-            max-width: 120px;
-        }
-
-        .probability-bar-container {
-            background-color: var(--border-color);
-            border-radius: 10px;
-            height: 8px;
-            width: 100%;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .probability-bar {
-            height: 100%;
-            border-radius: 10px;
-        }
-
-        .chance-text {
-            font-size: 0.75em; 
-            color: var(--text-muted);
-        }
-
-        .pnr-link {
-            color: var(--secondary);
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        
-        .pnr-link:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            color: var(--text-muted);
-            font-size: 0.9em;
-        }
-
-        mark {
-            background-color: #f1c40f;
-            color: #000;
-        }
-
-        /* Mobile Responsiveness */
         @media (max-width: 768px) {
-            th, td {
-                padding: 10px;
-                font-size: 0.9em;
-            }
-            
-            .face-wrapper {
-                width: 40px;
-                height: 40px;
-            }
-
-            .face-icon {
-                width: 30px;
-                height: 30px;
-            }
-
-            .hide-mobile {
-                display: none;
-            }
+            th, td { padding: 10px; font-size: 0.9em; }
+            .face-wrapper { width: 50px; height: 50px; }
+            .face-icon { width: 35px; height: 35px; }
+            .hide-mobile { display: none; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- Controls Area -->
         <div class="top-bar">
             <div id="updateTimer" class="update-timer">Next update: 5:00</div>
             <button class="theme-toggle" onclick="toggleTheme()">
@@ -383,10 +296,7 @@
         <header>
             <h1>🚄 Class Tour Ticket Tracker</h1>
             <p>Mangladweep Exp (12617) | 23-Jan-2026</p>
-            
-            <div class="stats-bar" id="statsBar">
-                <!-- Stats injected by JS -->
-            </div>
+            <div class="stats-bar" id="statsBar"></div>
         </header>
 
         <input type="text" id="searchInput" class="search-box" placeholder="Search for a name or PNR...">
@@ -402,9 +312,7 @@
                         <th>Chance</th>
                     </tr>
                 </thead>
-                <tbody id="ticketBody">
-                    <!-- Rows injected by JS -->
-                </tbody>
+                <tbody id="ticketBody"></tbody>
             </table>
         </div>
 
@@ -502,22 +410,13 @@
             }
         ];
 
-        // Process data: Flatten array and sort alphabetically
         let allPassengers = [];
         rawTicketData.forEach(group => {
-            group.passengers.forEach(p => {
-                allPassengers.push({
-                    ...p,
-                    pnr: group.pnr
-                });
-            });
+            group.passengers.forEach(p => { allPassengers.push({ ...p, pnr: group.pnr }); });
         });
-
-        // Sort by Name
         allPassengers.sort((a, b) => a.name.localeCompare(b.name));
 
-
-        // --- THEME LOGIC ---
+        // --- THEME ---
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
@@ -536,19 +435,16 @@
                 localStorage.setItem('theme', 'dark');
             }
         }
-
         function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
+            if (localStorage.getItem('theme') === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
                 document.getElementById('themeIcon').innerText = '☀️';
                 document.getElementById('themeText').innerText = 'Light Mode';
             }
         }
 
-        // --- UPDATE TIMER LOGIC ---
+        // --- TIMER ---
         let secondsRemaining = 300; 
-
         function startUpdateTimer() {
             const timerDisplay = document.getElementById('updateTimer');
             setInterval(() => {
@@ -562,10 +458,8 @@
                 timerDisplay.innerText = `Next refresh: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
             }, 1000);
         }
-
         function refreshView() {
-            const timerDisplay = document.getElementById('updateTimer');
-            timerDisplay.innerText = "Refreshing...";
+            document.getElementById('updateTimer').innerText = "Refreshing...";
             setTimeout(() => {
                 renderStats();
                 const currentSearch = document.getElementById('searchInput').value;
@@ -573,39 +467,31 @@
             }, 500);
         }
 
-        // --- TICKET LOGIC RECALCULATED ---
+        // --- LOGIC ---
         function calculateChance(status) {
             status = status.toUpperCase();
-            
-            // Default Error Fallback
-            let result = { percent: 0, text: "Unknown", color: "#95a5a6", img: "f80.png", fallbackEmoji: "❓", aura: "" };
+            // Default: Fire (80%)
+            let result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "fire" };
 
             if (status.includes("CNF")) {
-                // 100% - Joyful - Calm Blue Aura
-                result = { percent: 100, text: "Confirmed", color: "var(--success)", img: "f100.png", fallbackEmoji: "🤩", aura: "aura-100" };
+                result = { percent: 100, text: "Confirmed", color: "var(--success)", img: "f100.png", fallbackEmoji: "🤩", aura: "divine" };
             } 
             else if (status.includes("RAC")) {
                 const racNum = parseInt(status.match(/\d+/)) || 99;
-                
                 if (racNum <= 20) {
-                    // 95% - Happy
-                    result = { percent: 95, text: "High Chance", color: "var(--success)", img: "f95.png", fallbackEmoji: "🙂", aura: "aura-95" };
+                    result = { percent: 95, text: "High Chance", color: "var(--success)", img: "f95.png", fallbackEmoji: "🙂", aura: "sparkle" };
                 } else if (racNum <= 40) {
-                    // 90% - Neutral
-                    result = { percent: 90, text: "Likely", color: "var(--warning)", img: "f90.png", fallbackEmoji: "😐", aura: "aura-90" };
-                } else if (racNum <= 60) {
-                    // 85% - Slight Angry
-                    result = { percent: 85, text: "Uncertain", color: "#e67e22", img: "f85.png", fallbackEmoji: "😠", aura: "aura-85" };
+                    result = { percent: 90, text: "Likely", color: "var(--warning)", img: "f90.png", fallbackEmoji: "😐", aura: "chill" };
+                } else if (racNum <= 50) {
+                    result = { percent: 85, text: "Uncertain", color: "#e67e22", img: "f85.png", fallbackEmoji: "😠", aura: "glitch" };
                 } else {
-                    // 80% - Angry (Highest RAC = Lowest Chance = Flame)
-                    result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "aura-80" };
+                    // > 50 RAC goes to Fire
+                    result = { percent: 80, text: "Low Chance", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "fire" };
                 }
             } 
             else if (status.includes("WL")) {
-                // 80% - Angry
-                result = { percent: 80, text: "Waitlist", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "aura-80" };
+                result = { percent: 80, text: "Waitlist", color: "var(--danger)", img: "f80.png", fallbackEmoji: "😡", aura: "fire" };
             }
-
             return result;
         }
 
@@ -613,9 +499,7 @@
             let total = allPassengers.length;
             let cnf = allPassengers.filter(p => p.status.includes("CNF")).length;
             let rac = allPassengers.filter(p => p.status.includes("RAC")).length;
-
-            const statsBar = document.getElementById('statsBar');
-            statsBar.innerHTML = `
+            document.getElementById('statsBar').innerHTML = `
                 <div class="stat-card" style="border-left: 5px solid var(--primary)">Total: ${total}</div>
                 <div class="stat-card" style="border-left: 5px solid var(--success)">Confirmed: ${cnf}</div>
                 <div class="stat-card" style="border-left: 5px solid var(--warning)">RAC: ${rac}</div>
@@ -627,45 +511,46 @@
             tbody.innerHTML = "";
             const lowerFilter = filterText.toLowerCase();
 
-            allPassengers.forEach(p => {
+            // Stop any existing canvas animations to prevent memory leaks
+            if(window.animIds) { window.animIds.forEach(cancelAnimationFrame); window.animIds = []; }
+            window.animIds = [];
+
+            allPassengers.forEach((p, index) => {
                 const pnrMatches = p.pnr.includes(lowerFilter);
                 const nameMatches = p.name.toLowerCase().includes(lowerFilter);
-
                 if (!pnrMatches && !nameMatches && filterText !== "") return;
 
                 const chance = calculateChance(p.status);
-                let statusClass = "status-wl";
-                if(p.status.includes("CNF")) statusClass = "status-cnf";
-                else if(p.status.includes("RAC")) statusClass = "status-rac";
+                let statusClass = p.status.includes("CNF") ? "status-cnf" : (p.status.includes("RAC") ? "status-rac" : "status-wl");
+                const nameDisplay = (filterText && nameMatches) ? `<mark>${p.name}</mark>` : p.name;
+                
+                // Determine aura class
+                let auraHTML = "";
+                let wrapperClass = "";
 
-                const nameDisplay = (filterText && nameMatches) 
-                    ? `<mark>${p.name}</mark>` 
-                    : p.name;
+                if (chance.aura === "fire") {
+                    auraHTML = `<canvas class="aura-canvas" data-effect="fire" width="30" height="30"></canvas>`;
+                } else if (chance.aura === "sparkle") {
+                    auraHTML = `<canvas class="aura-canvas" data-effect="sparkle" width="30" height="30"></canvas>`;
+                } else {
+                    wrapperClass = `aura-${chance.aura}`; // Use CSS for divine, chill, glitch
+                }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>
-                        <div style="font-weight: 500;">${nameDisplay}</div>
-                    </td>
-                    <td>
-                        <a href="https://www.confirmtkt.com/pnr-status/${p.pnr}" target="_blank" class="pnr-link">${p.pnr} ↗</a>
-                    </td>
-                    <td class="hide-mobile">
-                        ${p.age}
-                    </td>
+                    <td><div style="font-weight: 500;">${nameDisplay}</div></td>
+                    <td><a href="https://www.confirmtkt.com/pnr-status/${p.pnr}" target="_blank" class="pnr-link">${p.pnr} ↗</a></td>
+                    <td class="hide-mobile">${p.age}</td>
                     <td><span class="status-badge ${statusClass}">${p.status}</span></td>
                     <td>
                         <div class="chance-cell">
-                            <!-- Image Wrapper with Aura Class -->
-                            <div class="face-wrapper ${chance.aura}">
+                            <div class="face-wrapper ${wrapperClass}">
+                                ${auraHTML}
                                 <img src="${chance.img}" class="face-icon" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size:30px\'>${chance.fallbackEmoji}</span>'">
                             </div>
-                            
                             <div class="probability-wrapper">
                                 <div style="font-size:0.9em; font-weight:bold; color:${chance.color}">${chance.percent}%</div>
-                                <div class="probability-bar-container">
-                                    <div class="probability-bar" style="width: ${chance.percent}%; background-color: ${chance.color}"></div>
-                                </div>
+                                <div class="probability-bar-container"><div class="probability-bar" style="width: ${chance.percent}%; background-color: ${chance.color}"></div></div>
                                 <div class="chance-text">${chance.text}</div>
                             </div>
                         </div>
@@ -673,9 +558,131 @@
                 `;
                 tbody.appendChild(row);
             });
+
+            // Initialize Canvas Effects
+            initCanvasEffects();
+        }
+
+        // --- PARTICLE PHYSICS ENGINE ---
+        function initCanvasEffects() {
+            const canvases = document.querySelectorAll('.aura-canvas');
+            canvases.forEach(canvas => {
+                const type = canvas.getAttribute('data-effect');
+                const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = false; // PIXELATED LOOK
+
+                if (type === 'fire') startFireEffect(canvas, ctx);
+                if (type === 'sparkle') startSparkleEffect(canvas, ctx);
+            });
+        }
+
+        function startFireEffect(canvas, ctx) {
+            let particles = [];
+            const w = canvas.width;
+            const h = canvas.height;
+
+            function loop() {
+                // Clear with slight fade for trail? No, clear mostly
+                ctx.clearRect(0, 0, w, h);
+
+                // Spawn new particles at bottom
+                // 3 particles per frame
+                for(let i=0; i<3; i++) {
+                    particles.push({
+                        x: Math.random() * w,
+                        y: h,
+                        vx: (Math.random() - 0.5) * 0.5, // Wiggle
+                        vy: -(Math.random() * 0.5 + 0.5), // Upward speed
+                        life: 1.0,
+                        colorOffset: Math.random() * 20
+                    });
+                }
+
+                // Update & Draw
+                for(let i=0; i<particles.length; i++) {
+                    let p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= 0.04; // Decay
+
+                    if(p.life <= 0) {
+                        particles.splice(i, 1);
+                        i--;
+                        continue;
+                    }
+
+                    // Physics: heat wobble
+                    p.vx += (Math.random() - 0.5) * 0.1;
+
+                    // Color: White -> Yellow -> Orange -> Red
+                    let color;
+                    if (p.life > 0.8) color = `rgba(255, 255, 200, ${p.life})`; // White Hot
+                    else if (p.life > 0.5) color = `rgba(255, 200, 0, ${p.life})`; // Yellow
+                    else if (p.life > 0.2) color = `rgba(255, 100, 0, ${p.life})`; // Orange
+                    else color = `rgba(200, 0, 0, ${p.life})`; // Red smoke
+
+                    ctx.fillStyle = color;
+                    // Draw pixel
+                    ctx.fillRect(Math.floor(p.x), Math.floor(p.y), 2, 2);
+                }
+
+                window.animIds.push(requestAnimationFrame(loop));
+            }
+            loop();
+        }
+
+        function startSparkleEffect(canvas, ctx) {
+            let particles = [];
+            const w = canvas.width;
+            const h = canvas.height;
+
+            function loop() {
+                ctx.clearRect(0, 0, w, h);
+
+                // Spawn randomly
+                if(Math.random() > 0.8) {
+                    particles.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        size: 0,
+                        maxSize: Math.random() * 3 + 1,
+                        growing: true,
+                        color: Math.random() > 0.5 ? '#f1c40f' : '#2ecc71'
+                    });
+                }
+
+                for(let i=0; i<particles.length; i++) {
+                    let p = particles[i];
+                    
+                    if(p.growing) {
+                        p.size += 0.2;
+                        if(p.size >= p.maxSize) p.growing = false;
+                    } else {
+                        p.size -= 0.2;
+                    }
+
+                    if(p.size <= 0 && !p.growing) {
+                        particles.splice(i, 1);
+                        i--;
+                        continue;
+                    }
+
+                    ctx.fillStyle = p.color;
+                    // Draw Cross shape for sparkle
+                    const s = Math.floor(p.size);
+                    const x = Math.floor(p.x);
+                    const y = Math.floor(p.y);
+                    
+                    ctx.fillRect(x, y - s, 1, s*2);
+                    ctx.fillRect(x - s, y, s*2, 1);
+                }
+                window.animIds.push(requestAnimationFrame(loop));
+            }
+            loop();
         }
 
         // Initialize
+        window.animIds = [];
         loadTheme();
         startUpdateTimer();
         renderStats();
